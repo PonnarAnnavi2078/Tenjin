@@ -13,17 +13,17 @@ jobs:
         node-version: [20.x]
 
     env:
-      IPADDR: 'https://yethi-test.tenjinonline.com'
+      IPADDR: 'https://yethi3936.tenjinonline.com/'
       INSID: 'yethi-test'
       APITOKEN: 'LtUmX2lU5j83StKUObafMDnFdfTLJkZW15IKbwI6zQfs8RrKY+6jMy0kilHq5TmWkp9Tk2VxjMzC2q3bGK4qhiszIB0qsCfcPTfE1/18Mx8i8LgkfLt7/c4hGaT3gv6L2BTr0XoIEdQACsAEc3pGiCS9CR38F6c98mmiAUBkBxF9fk1GAgxJPAGOXDvKy3YgPdQ75S51mWPYDhXjFB60kmw2eIfJS3kGUJmuc8fKScqNGuMkm+VzYYKNXTkMLwn2KQm0sstqesIWjHsCXlNwD3KhVnbeZWs52LUjeKQcLKyTWur8WVr/5mLXQ26pkDH+G529UothDHA37x0BqPe6LQ=='
-      AGENTNAME: 'Akshay'
+      AGENTNAME: 'Himaja'
       INCLUDECLOUDDEVICE: 'FALSE'
       INCLUDECLOUDBROWSER: 'FALSE'
       DEVICENAME: ''
-      PROJECTKEY: 'YMT'
+      PROJECTKEY: 'SBI'
       BROWSER: 'chrome'
       REGION: 'UTC+05:30'
-      TESTRUNID: 'Test-Run-13056975'
+      TESTRUNID: 'Test-Run-13055089'
       ISCLOUDAGENT: 'FALSE'
       BROWSERVERSION: ''
       OS: 'Windows 8.1'
