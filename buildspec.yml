@@ -5,7 +5,9 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - yum update -y
-      - yum install -y jq curl
+      - |
+        command -v curl >/dev/null 2>&1 || yum install -y curl
+        command -v jq >/dev/null 2>&1 || yum install -y jq
 
   build:
     commands:
