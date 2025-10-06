@@ -4,8 +4,10 @@ phases:
   install:
     commands:
       - echo "Installing dependencies..."
-      - apt-get update -y
-      - apt-get install -y jq curl
+      - yum update -y
+      - |
+        command -v curl >/dev/null 2>&1 || yum install -y curl
+        command -v jq >/dev/null 2>&1 || yum install -y jq
 
   build:
     commands:
