@@ -9,7 +9,7 @@ pipeline:
   properties:
     ci:
       codebase:
-        connectorRef: account.Tenjin_online
+        connectorRef: Tenjin_online
         repoName: Tenjin
         build:
           type: branch
