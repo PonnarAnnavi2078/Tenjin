@@ -1,8 +1,8 @@
 pipeline:
   name: Execute Test Run
   identifier: Execute_Test_Run
-  projectIdentifier: <+input>
-  orgIdentifier: <+input>
+  projectIdentifier: Default_Project
+  orgIdentifier: default
   tags: {}
   stages:
     - stage:
