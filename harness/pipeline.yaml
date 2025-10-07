@@ -1,7 +1,7 @@
 pipeline:
   name: Execute Test Run
   identifier: Execute_Test_Run
-  projectIdentifier: Default_Project
+  projectIdentifier: Tenjinonline
   orgIdentifier: default
   tags: {}
   stages:
