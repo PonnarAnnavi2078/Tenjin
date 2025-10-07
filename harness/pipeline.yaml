@@ -4,6 +4,18 @@ pipeline:
   projectIdentifier: Tenjinonline
   orgIdentifier: default
   tags: {}
+  
+  # FIX: 'properties' block is correctly placed under 'pipeline'
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Tenjin_online
+        repoName: Tenjin
+        build:
+          type: branch
+          spec:
+            branch: main
+
   stages:
     - stage:
         name: Execute Test Run
@@ -39,6 +51,7 @@ pipeline:
                   identifier: execute_test_run_step
                   spec:
                     shell: Bash
+                    # NOTE: Replace the hardcoded APITOKEN with a Harness Secret for security!
                     envVariables:
                       IPADDR: https://yethi-test.tenjinonline.com
                       INSID: yethi-test
@@ -62,19 +75,19 @@ pipeline:
                         --header "X-INS-ID: $INSID" \
                         --header "X-API-TOKEN: $APITOKEN" \
                         --data-raw '{
-                               "agentName": "'"$AGENTNAME"'",
-                               "includeCloudDevice": "'"$INCLUDECLOUDDEVICE"'",
-                               "includeCloudBrowser": "'"$INCLUDECLOUDBROWSER"'",
-                               "device": "'"$DEVICENAME"'",
-                               "projectKey": "'"$PROJECTKEY"'",
-                               "browser": "'"$BROWSER"'",
-                               "region": "'"$REGION"'",
-                               "testRunId": "'"$TESTRUNID"'",
-                               "cloudAgent": "'"$ISCLOUDAGENT"'",
-                               "browserVersion": "'"$BROWSERVERSION"'",
-                               "os": "'"$OS"'",
-                               "reRunFailedCases": "'"$RUNONLYFAILED"'"
-                               }')
+                              "agentName": "'"$AGENTNAME"'",
+                              "includeCloudDevice": "'"$INCLUDECLOUDDEVICE"'",
+                              "includeCloudBrowser": "'"$INCLUDECLOUDBROWSER"'",
+                              "device": "'"$DEVICENAME"'",
+                              "projectKey": "'"$PROJECTKEY"'",
+                              "browser": "'"$BROWSER"'",
+                              "region": "'"$REGION"'",
+                              "testRunId": "'"$TESTRUNID"'",
+                              "cloudAgent": "'"$ISCLOUDAGENT"'",
+                              "browserVersion": "'"$BROWSERVERSION"'",
+                              "os": "'"$OS"'",
+                              "reRunFailedCases": "'"$RUNONLYFAILED"'"
+                              }')
                       echo "EXECUTE response: $EXECUTE"
                       value=$(echo $EXECUTE | jq -r '.testRunId')
                       echo "Test Run ID: $value"
@@ -87,7 +100,8 @@ pipeline:
                     outputVariables:
                       - name: test_run_id
                         type: String
-                        value: test_run_id.txt
+                        # FIX: Correct way to export a file content to an output variable
+                        valueFromPath: /harness/test_run_id.txt 
 
               # Step 3: Monitor Test Run Status
               - step:
@@ -96,6 +110,7 @@ pipeline:
                   identifier: monitor_test_run_status
                   spec:
                     shell: Bash
+                    # NOTE: Replace the hardcoded APITOKEN with a Harness Secret for security!
                     envVariables:
                       IPADDR: https://yethi-test.tenjinonline.com
                       INSID: yethi-test
@@ -133,13 +148,3 @@ pipeline:
                               echo "Result status is $result"
                           fi
                       done
-
-properties:
-  ci:
-    codebase:
-      connectorRef: account.Tenjin_online  # Your Git connector ID
-      repoName: Tenjin                      # Your repo name
-      build:
-        type: branch
-        spec:
-          branch: main
