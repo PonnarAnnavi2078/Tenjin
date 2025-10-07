@@ -28,8 +28,10 @@ pipeline:
             os: Linux
             arch: Amd64
           runtime:
-            type: Cloud
-            spec: {}
+            type: SelfHosted
+            spec:
+              connectorRef: docker-delegate
+
           execution:
             steps:
 
