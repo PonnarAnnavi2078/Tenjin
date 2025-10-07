@@ -1,5 +1,93 @@
-jobs:
-  Job1:
-    name: Job 1
-    steps: []
-    runs-on: Linux-Medium
+version: 2025.1
+
+project:
+  name: Execute Test Run
+
+buildTypes:
+  - name: Execute Test Run
+    params:
+      IPADDR: 'https://yethi-test.tenjinonline.com'
+      INSID: 'yethi-test'
+      APITOKEN: 'NCd+02m6fCBwvAKY88Ud9Bqps36rCWLh2MK6IEGlwOnwhWGX0cdE1g/TgEdrSuO0ImA7Bdi8eu874XIMAfTL8WqQffMTN7eIs535mljZjwiPRIptfxsDWG84Z3Ig0yiMxJ+gNlNjJpwdD5ljkQ7W4S3/+K09y5tlSz/v+UB2/+LahiNcqffzcndj03KAbkMYGlai59wgeS7Goz3EvNHFdB6cIHCVwkCsSFg+lUtPrknemJHkIMsvjxJr1flY8mCi84Waj14J0mPZGtQ+5vmxeJps9J6/rI9KSzh8UiBi7pm1sSx5U8bagRcsbOnJJWMlP6yxd5LqDM4sdA4ycPhOQw=='
+      AGENTNAME: 'Akshay-prod'
+      INCLUDECLOUDDEVICE: 'FALSE'
+      INCLUDECLOUDBROWSER: 'FALSE'
+      DEVICENAME: ''
+      PROJECTKEY: 'JPD'
+      BROWSER: 'chrome'
+      REGION: 'UTC+05:30'
+      TESTRUNID: 'Test-Run-13381419'
+      ISCLOUDAGENT: 'FALSE'
+      BROWSERVERSION: ''
+      OS: 'Windows 8.1'
+      RUNONLYFAILED: 'FALSE'
+
+    steps:
+      - name: Checkout code
+        type: vcs
+        vcsRoot: 
+          id: your_vcs_root_id_here
+
+      - name: Install dependencies
+        type: script
+        scriptContent: |
+          sudo apt-get update
+          sudo apt-get install -y jq curl
+
+      - name: Execute test run
+        type: script
+        scriptContent: |
+          echo "Starting Execute test run step"
+          EXECUTE=$(curl -s -k --request POST "%IPADDR%" \
+            --header 'Content-Type: application/json' \
+            --header "X-INS-ID: %INSID%" \
+            --header "X-API-TOKEN: %APITOKEN%" \
+            --data-raw '{
+                   "agentName": "%AGENTNAME%",
+                   "includeCloudDevice": "%INCLUDECLOUDDEVICE%",
+                   "includeCloudBrowser": "%INCLUDECLOUDBROWSER%",
+                   "device": "%DEVICENAME%",
+                   "projectKey": "%PROJECTKEY%",
+                   "browser": "%BROWSER%",
+                   "region": "%REGION%",
+                   "testRunId": "%TESTRUNID%",
+                   "cloudAgent": "%ISCLOUDAGENT%",
+                   "browserVersion": "%BROWSERVERSION%",
+                   "os": "%OS%",
+                   "reRunFailedCases": "%RUNONLYFAILED%"
+                   }')
+          echo "EXECUTE response: $EXECUTE"
+          TEST_RUN_ID=$(echo $EXECUTE | jq -r '.testRunId')
+          echo "Test Run ID: $TEST_RUN_ID"
+          if [ -z "$TEST_RUN_ID" ] || [ "$TEST_RUN_ID" == "null" ]; then
+            echo "Failed to retrieve test run ID"
+            exit 1
+          fi
+          echo "##teamcity[setParameter name='env.TEST_RUN_ID' value='$TEST_RUN_ID']"
+
+      - name: Monitor test run status
+        type: script
+        scriptContent: |
+          echo "Starting Monitor test run status step"
+          status=''
+          agentstatus=''
+          response=''
+          result=''
+          end_time=$(($(date +%s) + 3600)) # One hour timeout
+          while [[ $status != 'COMPLETED' && $agentstatus != 'TERMINATED' && $agentstatus != 'ERROR' && $(date +%s) -lt $end_time ]]; do
+              echo "Fetching status for test run ID: %env.TEST_RUN_ID%"
+              response=$(curl -s -k --request GET "%IPADDR%/api/rest/1/testruns/%env.TEST_RUN_ID%/runstatus" \
+                --header 'Content-Type: application/json' \
+                --header "X-INS-ID: %INSID%" \
+                --header "X-API-TOKEN: %APITOKEN%")
+              echo "API response: $response"
+              status=$(echo $response | jq -r '.status')
+              result=$(echo $response | jq -r '.result')
+              agentstatus=$(echo $response | jq -r '.cloudAgentStatus')
+              echo "Parsed status: $status, result: $result, agent status: $agentstatus"
+              sleep 20
+              if [[ $result == 'FAIL' || $status == 'null' ]]; then
+                  echo "Result status is $result"
+                  exit 1
+              fi
+          done
