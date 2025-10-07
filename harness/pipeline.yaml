@@ -28,7 +28,7 @@ pipeline:
             os: Linux
             arch: Amd64
           runtime:
-            type: SelfHosted
+            type: Docker
             spec:
               connectorRef: docker-delegate
 
