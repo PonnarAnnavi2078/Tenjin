@@ -4,8 +4,7 @@ pipeline:
   projectIdentifier: Tenjinonline
   orgIdentifier: default
   tags: {}
-  
-  # FIX 1 (Syntax Error): The 'properties' block MUST be here, at the same level as 'stages'.
+
   properties:
     ci:
       codebase:
@@ -24,19 +23,16 @@ pipeline:
         type: CI
         spec:
           cloneCodebase: true
-          platform:
-            os: Linux
-            arch: Amd64
-            selector: linux-amd64
           runtime:
             type: Docker
             spec:
               connectorRef: docker-delegate
+              image: ubuntu:20.04
+              pull: true
 
           execution:
             steps:
 
-              # Step 1: Install Dependencies
               - step:
                   type: Run
                   name: Install Dependencies
@@ -47,14 +43,12 @@ pipeline:
                       apt-get update
                       apt-get install -y jq curl
 
-              # Step 2: Execute Test Run (Triggers the test and exports the ID)
               - step:
                   type: Run
                   name: Execute Test Run
                   identifier: execute_test_run_step
                   spec:
                     shell: Bash
-                    # SECURITY NOTE: Replace this hardcoded token with <+secrets.getValue("your_secret_id")>
                     envVariables:
                       IPADDR: https://yethi-test.tenjinonline.com
                       INSID: yethi-test
@@ -78,19 +72,19 @@ pipeline:
                         --header "X-INS-ID: $INSID" \
                         --header "X-API-TOKEN: $APITOKEN" \
                         --data-raw '{
-                              "agentName": "'"$AGENTNAME"'",
-                              "includeCloudDevice": "'"$INCLUDECLOUDDEVICE"'",
-                              "includeCloudBrowser": "'"$INCLUDECLOUDBROWSER"'",
-                              "device": "'"$DEVICENAME"'",
-                              "projectKey": "'"$PROJECTKEY"'",
-                              "browser": "'"$BROWSER"'",
-                              "region": "'"$REGION"'",
-                              "testRunId": "'"$TESTRUNID"'",
-                              "cloudAgent": "'"$ISCLOUDAGENT"'",
-                              "browserVersion": "'"$BROWSERVERSION"'",
-                              "os": "'"$OS"'",
-                              "reRunFailedCases": "'"$RUNONLYFAILED"'"
-                              }')
+                          "agentName": "'"$AGENTNAME"'",
+                          "includeCloudDevice": "'"$INCLUDECLOUDDEVICE"'",
+                          "includeCloudBrowser": "'"$INCLUDECLOUDBROWSER"'",
+                          "device": "'"$DEVICENAME"'",
+                          "projectKey": "'"$PROJECTKEY"'",
+                          "browser": "'"$BROWSER"'",
+                          "region": "'"$REGION"'",
+                          "testRunId": "'"$TESTRUNID"'",
+                          "cloudAgent": "'"$ISCLOUDAGENT"'",
+                          "browserVersion": "'"$BROWSERVERSION"'",
+                          "os": "'"$OS"'",
+                          "reRunFailedCases": "'"$RUNONLYFAILED"'"
+                        }')
                       echo "EXECUTE response: $EXECUTE"
                       value=$(echo $EXECUTE | jq -r '.testRunId')
                       echo "Test Run ID: $value"
@@ -98,28 +92,22 @@ pipeline:
                         echo "Failed to retrieve test run ID"
                         exit 1
                       fi
-                      # Write the variable to the required file path in the container
                       echo "$value" > /harness/test_run_id.txt
                     outputVariables:
                       - name: test_run_id
                         type: String
-                        # FIX 2 (Serialization Error): Using 'value' with the file name is the stable way to read 
-                        # the variable from /harness/test_run_id.txt on some Harness versions.
-                        value: test_run_id.txt 
+                        value: test_run_id.txt
 
-              # Step 3: Monitor Test Run Status (Uses the exported variable)
               - step:
                   type: Run
                   name: Monitor Test Run Status
                   identifier: monitor_test_run_status
                   spec:
                     shell: Bash
-                    # SECURITY NOTE: Replace this hardcoded token with <+secrets.getValue("your_secret_id")>
                     envVariables:
                       IPADDR: https://yethi-test.tenjinonline.com
                       INSID: yethi-test
                       APITOKEN: NCd+02m6fCBwvAKY88Ud9Bqps36rCWLh2MK6IEGlwOnwhWGX0cdE1g/TgEdrSuO0ImA7Bdi8eu874XIMAfTL8WqQffMTN7eIs535mljZjwiPRIptfxsDWG84Z3Ig0yiMxJ+gNlNjJpwdD5ljkQ7W4S3/+K09y5tlSz/v+UB2/+LahiNcqffzcndj03KAbkMYGlai59wgeS7Goz3EvNHFdB6cIHCVwkCsSFg+lUtPrknemJHkIMsvjxJr1flY8mCi84Waj14J0mPZGtQ+5vmxeJps9J6/rI9KSzh8UiBi7pm1sSx5U8bagRcsbOnJJWMlP6yxd5LqDM4sdA4ycPhOQw==
-                      # Variable is successfully passed from Step 2
                       TEST_RUN_ID: <+execution.steps.execute_test_run_step.output.outputVariables.test_run_id>
                     command: |
                       echo "Starting Monitor test run status step"
@@ -128,7 +116,7 @@ pipeline:
                       response=''
                       result=''
                       count=0
-                      end_time=$(($(date +%s) + 3600)) # One hour timeout
+                      end_time=$(($(date +%s) + 3600))
                       
                       while [[ $status != 'COMPLETED' && $agentstatus != 'TERMINATED' && $agentstatus != 'ERROR' && $(date +%s) -lt $end_time ]]; do
                           echo "Loop count: $count"
