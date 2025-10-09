@@ -24,9 +24,10 @@ pipeline:
         type: CI
         spec:
           cloneCodebase: true
-          # platform:
-          #   os: Linux
-          #   arch: Amd64
+          platform:
+            os: Linux
+            arch: Amd64
+            selector: linux-amd64
           runtime:
             type: Docker
             spec:
