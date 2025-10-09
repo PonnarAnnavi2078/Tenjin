@@ -4,7 +4,6 @@ pipeline:
   projectIdentifier: Tenjinonline
   orgIdentifier: default
   tags: {}
-
   properties:
     ci:
       codebase:
@@ -14,7 +13,6 @@ pipeline:
           type: branch
           spec:
             branch: main
-
   stages:
     - stage:
         name: Execute Test Run
@@ -24,18 +22,16 @@ pipeline:
         spec:
           cloneCodebase: true
           platform:
-            os: Linux        
-            arch: Amd64      
+            os: Linux
+            arch: Amd64
           runtime:
             type: Docker
             spec:
               connectorRef: docker-delegate
               image: ubuntu:20.04
               pull: true
-
           execution:
             steps:
-
               - step:
                   type: Run
                   name: Install Dependencies
@@ -45,7 +41,6 @@ pipeline:
                     command: |
                       apt-get update
                       apt-get install -y jq curl
-
               - step:
                   type: Run
                   name: Execute Test Run
@@ -100,7 +95,6 @@ pipeline:
                       - name: test_run_id
                         type: String
                         value: test_run_id.txt
-
               - step:
                   type: Run
                   name: Monitor Test Run Status
@@ -120,7 +114,7 @@ pipeline:
                       result=''
                       count=0
                       end_time=$(($(date +%s) + 3600))
-                      
+
                       while [[ $status != 'COMPLETED' && $agentstatus != 'TERMINATED' && $agentstatus != 'ERROR' && $(date +%s) -lt $end_time ]]; do
                           echo "Loop count: $count"
                           echo "Fetching status for test run ID: $TEST_RUN_ID"
@@ -144,3 +138,5 @@ pipeline:
                               echo "Result status is $result"
                           fi
                       done
+        delegateSelectors:
+          - docker-delegate
