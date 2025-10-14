@@ -3,7 +3,9 @@ trigger:
   - main  # or your branch name
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: Default
+  demands:
+    - agent.name -equals tt6
 
 variables:
   IPADDR: 'https://yethi-test.tenjinonline.com'
