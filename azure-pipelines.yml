@@ -1,6 +1,5 @@
-# azure-pipelines.yml
 trigger:
-  - main  # or your branch name
+  - main
 
 pool:
   name: Default
@@ -21,7 +20,7 @@ variables:
   TESTRUNID: 'Test-Run-13381419'
   ISCLOUDAGENT: 'FALSE'
   BROWSERVERSION: ''
-  OS: 'Windows 8.1'
+  OS: 'Linux'
   RUNONLYFAILED: 'FALSE'
 
 steps:
@@ -34,24 +33,41 @@ steps:
 
   - script: |
       echo "Starting Execute Test Run step..."
-      EXECUTE=$(curl -s -k --request POST "$(IPADDR)/api/rest/1/execute/testrun" \
-        --header 'Content-Type: application/json' \
-        --header "X-INS-ID: $(INSID)" \
-        --header "X-API-TOKEN: $(APITOKEN)" \
-        --data-raw '{
-          "agentName": "'$(AGENTNAME)'",
-          "includeCloudDevice": "'$(INCLUDECLOUDDEVICE)'",
-          "includeCloudBrowser": "'$(INCLUDECLOUDBROWSER)'",
-          "device": "'$(DEVICENAME)'",
-          "projectKey": "'$(PROJECTKEY)'",
-          "browser": "'$(BROWSER)'",
-          "region": "'$(REGION)'",
-          "testRunId": "'$(TESTRUNID)'",
-          "cloudAgent": "'$(ISCLOUDAGENT)'",
-          "browserVersion": "'$(BROWSERVERSION)'",
-          "os": "'$(OS)'",
-          "reRunFailedCases": "'$(RUNONLYFAILED)'"
+      # Use jq to safely build JSON
+      JSON_PAYLOAD=$(jq -n \
+        --arg agentName "$AGENTNAME" \
+        --arg includeCloudDevice "$INCLUDECLOUDDEVICE" \
+        --arg includeCloudBrowser "$INCLUDECLOUDBROWSER" \
+        --arg device "$DEVICENAME" \
+        --arg projectKey "$PROJECTKEY" \
+        --arg browser "$BROWSER" \
+        --arg region "$REGION" \
+        --arg testRunId "$TESTRUNID" \
+        --arg cloudAgent "$ISCLOUDAGENT" \
+        --arg browserVersion "$BROWSERVERSION" \
+        --arg os "$OS" \
+        --arg reRunFailedCases "$RUNONLYFAILED" \
+        '{
+          agentName: $agentName,
+          includeCloudDevice: $includeCloudDevice,
+          includeCloudBrowser: $includeCloudBrowser,
+          device: $device,
+          projectKey: $projectKey,
+          browser: $browser,
+          region: $region,
+          testRunId: $testRunId,
+          cloudAgent: $cloudAgent,
+          browserVersion: $browserVersion,
+          os: $os,
+          reRunFailedCases: $reRunFailedCases
         }')
+
+      EXECUTE=$(curl -s -k -X POST "$(IPADDR)/api/rest/1/execute/testrun" \
+        -H "Content-Type: application/json" \
+        -H "X-INS-ID: $(INSID)" \
+        -H "X-API-TOKEN: $(APITOKEN)" \
+        -d "$JSON_PAYLOAD")
+
       echo "EXECUTE response: $EXECUTE"
 
       TEST_RUN_ID=$(echo $EXECUTE | jq -r '.testRunId')
