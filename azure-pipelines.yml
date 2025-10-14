@@ -5,7 +5,7 @@ pool:
   name: Default
   demands:
     - agent.name -equals tt6
-
+    
 variables:
   IPADDR: 'https://yethi-test.tenjinonline.com'
   INSID: 'yethi-test'
@@ -20,7 +20,7 @@ variables:
   TESTRUNID: 'Test-Run-13381419'
   ISCLOUDAGENT: 'FALSE'
   BROWSERVERSION: ''
-  OS: 'Linux'
+  OS: 'Windows 8.1'
   RUNONLYFAILED: 'FALSE'
 
 steps:
@@ -32,42 +32,25 @@ steps:
     displayName: 'Install dependencies'
 
   - script: |
-      echo "Starting Execute Test Run step..."
-      # Use jq to safely build JSON
-      JSON_PAYLOAD=$(jq -n \
-        --arg agentName "$AGENTNAME" \
-        --arg includeCloudDevice "$INCLUDECLOUDDEVICE" \
-        --arg includeCloudBrowser "$INCLUDECLOUDBROWSER" \
-        --arg device "$DEVICENAME" \
-        --arg projectKey "$PROJECTKEY" \
-        --arg browser "$BROWSER" \
-        --arg region "$REGION" \
-        --arg testRunId "$TESTRUNID" \
-        --arg cloudAgent "$ISCLOUDAGENT" \
-        --arg browserVersion "$BROWSERVERSION" \
-        --arg os "$OS" \
-        --arg reRunFailedCases "$RUNONLYFAILED" \
-        '{
-          agentName: $agentName,
-          includeCloudDevice: $includeCloudDevice,
-          includeCloudBrowser: $includeCloudBrowser,
-          device: $device,
-          projectKey: $projectKey,
-          browser: $browser,
-          region: $region,
-          testRunId: $testRunId,
-          cloudAgent: $cloudAgent,
-          browserVersion: $browserVersion,
-          os: $os,
-          reRunFailedCases: $reRunFailedCases
-        }')
-
-      EXECUTE=$(curl -s -k -X POST "$(IPADDR)/api/rest/1/execute/testrun" \
+      echo "Starting Execute Test Run..."
+      EXECUTE=$(curl -s -k -X POST "$IPADDR/api/rest/1/execute/testrun" \
         -H "Content-Type: application/json" \
-        -H "X-INS-ID: $(INSID)" \
-        -H "X-API-TOKEN: $(APITOKEN)" \
-        -d "$JSON_PAYLOAD")
-
+        -H "X-INS-ID: $INSID" \
+        -H "X-API-TOKEN: $APITOKEN" \
+        -d '{
+          "agentName": "'"$AGENTNAME"'",
+          "includeCloudDevice": "'"$INCLUDECLOUDDEVICE"'",
+          "includeCloudBrowser": "'"$INCLUDECLOUDBROWSER"'",
+          "device": "'"$DEVICENAME"'",
+          "projectKey": "'"$PROJECTKEY"'",
+          "browser": "'"$BROWSER"'",
+          "region": "'"$REGION"'",
+          "testRunId": "'"$TESTRUNID"'",
+          "cloudAgent": "'"$ISCLOUDAGENT"'",
+          "browserVersion": "'"$BROWSERVERSION"'",
+          "os": "'"$OS"'",
+          "reRunFailedCases": "'"$RUNONLYFAILED"'"
+        }')
       echo "EXECUTE response: $EXECUTE"
 
       TEST_RUN_ID=$(echo $EXECUTE | jq -r '.testRunId')
@@ -77,41 +60,41 @@ steps:
         echo "Failed to retrieve test run ID"
         exit 1
       fi
-    displayName: 'Execute Test Run'
 
-  - script: |
-      echo "Starting Monitor Test Run status step..."
-      status=''
-      agentstatus=''
-      result=''
-      count=0
-      end_time=$(($(date +%s) + 3600))
+      # Only monitor if cloud agent is TRUE
+      if [ "$ISCLOUDAGENT" == "TRUE" ]; then
+        echo "Cloud agent detected. Monitoring test run..."
+        status=''
+        agentstatus=''
+        result=''
+        end_time=$(($(date +%s) + 3600)) # 1 hour timeout
+        count=0
 
-      while [[ $status != 'COMPLETED' && $agentstatus != 'TERMINATED' && $agentstatus != 'ERROR' && $(date +%s) -lt $end_time ]]; do
-        echo "Loop count: $count"
-        echo "Fetching status for test run ID: $TEST_RUN_ID"
-        response=$(curl -s -k --request GET "$(IPADDR)/api/rest/1/testruns/$TEST_RUN_ID/runstatus" \
-          --header 'Content-Type: application/json' \
-          --header "X-INS-ID: $(INSID)" \
-          --header "X-API-TOKEN: $(APITOKEN)")
+        while [[ $status != 'COMPLETED' && $agentstatus != 'TERMINATED' && $agentstatus != 'ERROR' && $(date +%s) -lt $end_time ]]; do
+          echo "Loop count: $count"
+          response=$(curl -s -k "$IPADDR/api/rest/1/testruns/$TEST_RUN_ID/runstatus" \
+            -H "Content-Type: application/json" \
+            -H "X-INS-ID: $INSID" \
+            -H "X-API-TOKEN: $APITOKEN")
+          echo "API response: $response"
 
-        echo "API response: $response"
-        status=$(echo $response | jq -r '.status')
-        result=$(echo $response | jq -r '.result')
-        agentstatus=$(echo $response | jq -r '.cloudAgentStatus')
+          status=$(echo $response | jq -r '.status')
+          result=$(echo $response | jq -r '.result')
+          agentstatus=$(echo $response | jq -r '.cloudAgentStatus')
 
-        echo "Parsed status: $status"
-        echo "Parsed result: $result"
-        echo "Parsed agent status: $agentstatus"
+          echo "Parsed status: $status"
+          echo "Parsed result: $result"
+          echo "Parsed agent status: $agentstatus"
 
-        sleep 20
-        count=$((count+1))
+          if [[ $result == 'FAIL' || $status == 'null' ]]; then
+            echo "Test run failed or invalid."
+            exit 1
+          fi
 
-        if [[ $result == 'FAIL' || $status == 'null' ]]; then
-          echo "Result status is $result"
-          exit 1
-        else
-          echo "Result status is $result"
-        fi
-      done
-    displayName: 'Monitor Test Run'
+          sleep 20
+          count=$((count+1))
+        done
+      else
+        echo "Default/local agent. Skipping monitor step."
+      fi
+    displayName: 'Execute and Monitor Test Run'
