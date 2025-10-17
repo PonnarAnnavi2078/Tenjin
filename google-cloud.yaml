@@ -1,0 +1,175 @@
+steps:
+  - name: ubuntu
+    args:
+      - '-c'
+      - >
+        echo "Installing dependencies..."
+
+        apt-get update -y
+
+        apt-get install -y curl jq
+
+        echo "Dependencies installed successfully"
+
+
+        echo "Starting Execute Test Run step..."
+
+
+        IPADDR='https://yethi-test.tenjinonline.com'
+
+        INSID='yethi-test'
+
+        APITOKEN='PTBObDiIJfEjGjQ6a8B+czxjxGVRlRrOO3Tgxj3csQPwz7mLSzAJbLtvEKnZfhpgomYv7bM0F04EpcfjQ30ce/JspffvHKmHqZ8oX5oAQXW0Drwbx9GJeBrc0vdK27/HfxOEk7KQkR1DxbGpcObx21wYKs/Ufhv0VLXdTbVUYqVfjDSbEL36GumM0Xz2ElkG5y7iKt0weZBAlLbQGPUDOWwgTIPBQTrnE51iQKpp7FLNYKmpmczfm7a9GcNFcGh2KbwqlN8Bya3q4aWdKqGqMWjdcTfsnEhfqBXmYb7i/1/N0aDVZKuXg/50bzbNwURx5Cp3oqr7fYeodle3Rgw+jw=='
+
+        AGENTNAME='Ponnar-agent'
+
+        INCLUDECLOUDDEVICE='FALSE'
+
+        INCLUDECLOUDBROWSER='FALSE'
+
+        DEVICENAME=''
+
+        PROJECTKEY='JPD'
+
+        BROWSER='chrome'
+
+        REGION='UTC+05:30'
+
+        TESTRUNID='Test-Run-13381419'
+
+        ISCLOUDAGENT='FALSE'
+
+        BROWSERVERSION=''
+
+        OS='Windows 8.1'
+
+        RUNONLYFAILED='FALSE'
+
+
+        echo "Making API call to execute test run..."
+
+
+        EXECUTE=$$(curl -s -k --request POST \
+          "$$IPADDR/api/rest/1/execute/testrun" \
+          --header 'Content-Type: application/json' \
+          --header "X-INS-ID: $$INSID" \
+          --header "X-API-TOKEN: $$APITOKEN" \
+          --data-raw '{
+                "agentName": "'"$$AGENTNAME"'",
+                "includeCloudDevice": "'"$$INCLUDECLOUDDEVICE"'",
+                "includeCloudBrowser": "'"$$INCLUDECLOUDBROWSER"'",
+                "device": "'"$$DEVICENAME"'",
+                "projectKey": "'"$$PROJECTKEY"'",
+                "browser": "'"$$BROWSER"'",
+                "region": "'"$$REGION"'",
+                "testRunId": "'"$$TESTRUNID"'",
+                "cloudAgent": "'"$$ISCLOUDAGENT"'",
+                "browserVersion": "'"$$BROWSERVERSION"'",
+                "os": "'"$$OS"'",
+                "reRunFailedCases": "'"$$RUNONLYFAILED"'"
+                }')
+
+        echo "EXECUTE response: $$EXECUTE"
+
+
+        TEST_RUN_ID=$$(echo "$$EXECUTE" | jq -r '.testRunId')
+
+
+        echo "Test Run ID: $$TEST_RUN_ID"
+
+
+        if [ -z "$$TEST_RUN_ID" ] || [ "$$TEST_RUN_ID" == "null" ]; then
+          echo "Failed to retrieve test run ID"
+          echo "Full response was: $$EXECUTE"
+          exit 1
+        fi
+
+
+        echo "Exporting variables for next step..."
+
+        echo "export IPADDR='$$IPADDR'" > /workspace/env_vars.sh
+
+        echo "export INSID='$$INSID'" >> /workspace/env_vars.sh
+
+        echo "export APITOKEN='$$APITOKEN'" >> /workspace/env_vars.sh
+
+        echo "export TEST_RUN_ID='$$TEST_RUN_ID'" >> /workspace/env_vars.sh
+
+
+        echo "Step 1 completed successfully"
+    entrypoint: bash
+  - name: ubuntu
+    args:
+      - '-c'
+      - >
+        echo "Installing dependencies..."
+
+        apt-get update -y
+
+        apt-get install -y curl jq
+
+        echo "Dependencies installed successfully"
+
+
+        echo "Starting Monitor Test Run status step..."
+
+
+        source /workspace/env_vars.sh
+
+
+        if [ -z "$$TEST_RUN_ID" ]; then
+            echo "Error: TEST_RUN_ID is empty. Cannot continue."
+            exit 1
+        fi
+
+
+        echo "Monitoring test run: $$TEST_RUN_ID"
+
+
+        status=''
+
+        agentstatus=''
+
+        result=''
+
+        end_time=$(( $(date +%s) + 3600 ))
+
+
+        while [[ $status != 'COMPLETED' && $agentstatus != 'TERMINATED' &&
+        $agentstatus != 'ERROR' && $(date +%s) -lt $end_time ]]; do
+            
+            response=$$(curl -s -k --request GET "$$IPADDR/api/rest/1/testruns/$$TEST_RUN_ID/runstatus" \
+              --header 'Content-Type: application/json' \
+              --header "X-INS-ID: $$INSID" \
+              --header "X-API-TOKEN: $$APITOKEN")
+
+            status=$$(echo "$$response" | jq -r '.status')
+            result=$$(echo "$$response" | jq -r '.result')
+            agentstatus=$$(echo "$$response" | jq -r '.cloudAgentStatus')
+
+            echo "Status: $$status | Result: $$result | Agent: $$agentstatus"
+            
+            if [[ "$$result" == 'FAIL' || "$$status" == 'null' || "$$agentstatus" == 'TERMINATED' || "$$agentstatus" == 'ERROR' ]]; then
+                 echo "Test run failed or terminated unexpectedly!"
+                 if [[ "$$result" == 'FAIL' || "$$status" == 'null' ]]; then
+                    exit 1
+                 fi
+                 break
+            fi
+            
+            sleep 20
+        done
+
+
+        if [[ "$$result" != 'PASS' && "$$status" != 'COMPLETED' ]]; then
+            echo "Test Run completed with result: $$result"
+            exit 1
+        fi
+
+
+        echo "Test Run completed successfully with result: $$result"
+    entrypoint: bash
+options:
+  logging: CLOUD_LOGGING_ONLY
+serviceAccount: >-
+  projects/YOUR_PROJECT_ID/serviceAccounts/738348660997-compute@developer.gserviceaccount.com
