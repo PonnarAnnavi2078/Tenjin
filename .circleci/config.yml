@@ -7,8 +7,8 @@ jobs:
     environment:
       IPADDR: "https://yethi-test.tenjinonline.com"
       INSID: "yethi-test"
-      APITOKEN: "NCd+02m6fCBwvAKY88Ud9Bqps36rCWLh2MK6IEGlwOnwhWGX0cdE1g/TgEdrSuO0ImA7Bdi8eu874XIMAfTL8WqQffMTN7eIs535mljZjwiPRIptfxsDWG84Z3Ig0yiMxJ+gNlNjJpwdD5ljkQ7W4S3/+K09y5tlSz/v+UB2/+LahiNcqffzcndj03KAbkMYGlai59wgeS7Goz3EvNHFdB6cIHCVwkCsSFg+lUtPrknemJHkIMsvjxJr1flY8mCi84Waj14J0mPZGtQ+5vmxeJps9J6/rI9KSzh8UiBi7pm1sSx5U8bagRcsbOnJJWMlP6yxd5LqDM4sdA4ycPhOQw=="
-      AGENTNAME: "Akshay-prod"
+      APITOKEN: "PTBObDiIJfEjGjQ6a8B+czxjxGVRlRrOO3Tgxj3csQPwz7mLSzAJbLtvEKnZfhpgomYv7bM0F04EpcfjQ30ce/JspffvHKmHqZ8oX5oAQXW0Drwbx9GJeBrc0vdK27/HfxOEk7KQkR1DxbGpcObx21wYKs/Ufhv0VLXdTbVUYqVfjDSbEL36GumM0Xz2ElkG5y7iKt0weZBAlLbQGPUDOWwgTIPBQTrnE51iQKpp7FLNYKmpmczfm7a9GcNFcGh2KbwqlN8Bya3q4aWdKqGqMWjdcTfsnEhfqBXmYb7i/1/N0aDVZKuXg/50bzbNwURx5Cp3oqr7fYeodle3Rgw+jw=="
+      AGENTNAME: "Ponnar-agent"
       INCLUDECLOUDDEVICE: "FALSE"
       INCLUDECLOUDBROWSER: "FALSE"
       DEVICENAME: ""
