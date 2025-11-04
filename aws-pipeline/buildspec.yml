@@ -12,17 +12,17 @@ phases:
   build:
     commands:
       - echo "Starting Execute Test Run step..."
-      - IPADDR='https://yethi-test.tenjinonline.com'
-      - INSID='yethi-test'
-      - APITOKEN='NCd+02m6fCBwvAKY88Ud9Bqps36rCWLh2MK6IEGlwOnwhWGX0cdE1g/TgEdrSuO0ImA7Bdi8eu874XIMAfTL8WqQffMTN7eIs535mljZjwiPRIptfxsDWG84Z3Ig0yiMxJ+gNlNjJpwdD5ljkQ7W4S3/+K09y5tlSz/v+UB2/+LahiNcqffzcndj03KAbkMYGlai59wgeS7Goz3EvNHFdB6cIHCVwkCsSFg+lUtPrknemJHkIMsvjxJr1flY8mCi84Waj14J0mPZGtQ+5vmxeJps9J6/rI9KSzh8UiBi7pm1sSx5U8bagRcsbOnJJWMlP6yxd5LqDM4sdA4ycPhOQw=='
-      - AGENTNAME='Akshay-prod'
+      - IPADDR='https://192.168.17.29'
+      - INSID='tenjinonlineregression`'
+      - APITOKEN='bUi7RW26YQtbbk+M91Qs4y0URTBDPTtxji8mNKDrX7OGf4FAHAV8v5uCCU8+zkCcqqCqeji1o5duY+/j3LdQxQugNP0WWJ2ORRZ9qEY9wYcHtCU+yAvTL1aaAjuSEIBjEPs0EpMuxU9uX5c+dBYHMzBzv71QA0X+7f1RAPVq/vM5Y90u940CTCur47Kt+Ay5cUdEjKgwJyIF1xJNtL3xuCtHi0O01Nv9Ljji6uzaOCelYFF/XmVebA0fhcFAh50OALeVq/ISgMLHfffRP9uMxD3i0ttSQztZmTM4drjOFRDk0baCL3e1T5YQI5CdTu7b+vfk1CGXDGb4UYCnkv3zKQ=='
+      - AGENTNAME='TOT'
       - INCLUDECLOUDDEVICE='FALSE'
       - INCLUDECLOUDBROWSER='FALSE'
       - DEVICENAME=''
-      - PROJECTKEY='JPD'
+      - PROJECTKEY='AUR'
       - BROWSER='chrome'
       - REGION='UTC+05:30'
-      - TESTRUNID='Test-Run-13381419'
+      - TESTRUNID='Test-Run-13056693'
       - ISCLOUDAGENT='FALSE'
       - BROWSERVERSION=''
       - OS='Windows 8.1'
