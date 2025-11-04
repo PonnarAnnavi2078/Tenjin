@@ -17,7 +17,7 @@ jobs:
       REGION: "UTC+05:30"
       TESTRUNID: "Test-Run-13056639"
       ISCLOUDAGENT: "FALSE"
-      BROWSERVERSION: ""
+      BROWSERVERSION: "141.0.7"
       OS: "Windows 8.1"
       RUNONLYFAILED: "FALSE"
     steps:
