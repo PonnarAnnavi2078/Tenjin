@@ -5,17 +5,17 @@ jobs:
     docker:
       - image: cimg/base:stable  # CircleCI base image (Ubuntu)
     environment:
-      IPADDR: "https://192.168.17.29"
-      INSID: "tenjinonlineregression"
-      APITOKEN: "bUi7RW26YQtbbk+M91Qs4y0URTBDPTtxji8mNKDrX7OGf4FAHAV8v5uCCU8+zkCcqqCqeji1o5duY+/j3LdQxQugNP0WWJ2ORRZ9qEY9wYcHtCU+yAvTL1aaAjuSEIBjEPs0EpMuxU9uX5c+dBYHMzBzv71QA0X+7f1RAPVq/vM5Y90u940CTCur47Kt+Ay5cUdEjKgwJyIF1xJNtL3xuCtHi0O01Nv9Ljji6uzaOCelYFF/XmVebA0fhcFAh50OALeVq/ISgMLHfffRP9uMxD3i0ttSQztZmTM4drjOFRDk0baCL3e1T5YQI5CdTu7b+vfk1CGXDGb4UYCnkv3zKQ=="
-      AGENTNAME: "TOTSHAL"
+      IPADDR: "https://yethi-test.tenjinonline.com"
+      INSID: "yethi-test"
+      APITOKEN: "aRPnE1MiQtSz2ACZP5X9m1+YI3yzujrQ0tdbMfYn/faj/nFjziLM/+Cu5FllKc0A4ev9/AHlgnLM4U2kFUzK7VK6lBQAcVYEzP6sKkc6Hv3G+xz4fv5OVJzcIVMiqFYHUN3c1tHS5lkV6ZRiIMy9KWKMZEMHS+y3Us67TTHoz/83teeSLge+3n4sPHcvrG3lLz9McW4pXMjC2FVi3o/An8zIbogYeN2sRj2W6KxKm1fDy3YEAEAVoz8eqBRK7dNLnHqdEjdDd/ZNHxG4nHIoZsyXrfkig0Tbauu0tdgq6GJvsS6HC+q3EeoS+dVuEGuZ8ESwo4tzikesLGLQb4SvgnA=="
+      AGENTNAME: "PRODSHAL"
       INCLUDECLOUDDEVICE: "FALSE"
       INCLUDECLOUDBROWSER: "FALSE"
       DEVICENAME: ""
-      PROJECTKEY: "AUR"
+      PROJECTKEY: "P44"
       BROWSER: "chrome"
       REGION: "UTC+05:30"
-      TESTRUNID: "Test-Run-13056639"
+      TESTRUNID: "Test-Run-13036563"
       ISCLOUDAGENT: "FALSE"
       BROWSERVERSION: "141.0.7"
       OS: "Windows 8.1"
