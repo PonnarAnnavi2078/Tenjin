@@ -8,7 +8,7 @@ variables:
   IPADDR: 'https://yethi-test.tenjinonline.com'
   INSID: 'yethi-test'
   APITOKEN: 'LNUlX1S3DM7ngSDddZhUzIn4TwY+rnyVSSvCyPqqGmeZguys+/1/kgzKuD7bCixQMHalWaguuuyFmZU0/Dba2mpnajAbldrU6NfW9LDSxJAji+CM9g8zx/aeY+JSfUP4ufbnUqNRhFivQA+QewBRoNZ9UMZZpckPSaXj1FkaPQYu4WuIBxfbotBcHQpBy239L9uWPt3aeJ4D40rrBNhb7LjI/zl5HG45Ya4dsAG4Sp6Z/5hk6aHwUvp87jkJBSyn7KKW293GzLN3Fa4yGB+ZYL4WKEdEQZf/eDQu32p2sidPagOFtnrolRggLAD97o1c4UhkxGHOiFSnz5U8jy4Z2Q=='
-  AGENTNAME: 'ef892332-a671-405f-abe4-3045ef048ace'
+  AGENTNAME: 'prodshal'
   INCLUDECLOUDDEVICE: 'FALSE'
   INCLUDECLOUDBROWSER: 'FALSE'
   DEVICENAME: ''
