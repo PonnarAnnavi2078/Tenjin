@@ -13,17 +13,17 @@ jobs:
         node-version: [20.x]
 
     env:
-      IPADDR: 'https://192.168.17.29'
-      INSID: 'tenjinonlineregression'
-      APITOKEN: 'MuNws2ARvL/FjjLqaYuhvFadb8eBgFdrjWXPHAxTHza6LOtPzeUYUQTUz0NS3fj3+u51b7yYLdzfRxTIWCoRS+k/ZNPoAdQi9yXm/6jd9lqcwj0suW3F4UcET3Qq76HvNLHKa/E40FdhhZEYQQxtKj9sh/Xje7Dnbcd7VUlfQb8CrZK2Cui8G3mIdnQESpdgYF/v8wr+fOaTsXPFg82XFp8/OlVGTwFB8W9RkbtXwdHH7jFble4T0Xq2Vr/sMXamOlmcNIOyfCA6bjNZ/00CgBCrbzD5QjVTWJQSMB7MfrJ+IdNMePUUhRCbDcCZ/HncLsvnCUbbd+brf5GKbZDatQ=='
-      AGENTNAME: 'chaya0411'
+      IPADDR: 'https://yethi-test.tenjinonline.com'
+      INSID: 'yethi-test'
+      APITOKEN: 'ffRBi3YFWRp1GbZBJ8BhlANjeqcIcv901U6xXRy8xD/kluwDWlismXzKuNlQcBMdqVG62SGXcqvof0cGT0Jud0aYvvuR7YuGsp0HPrYnUECClOPSyGNdx3NU7QLviaMwxYvK3XPR3I7HUO1KXNtIjw0mPiiivsPrrUC0wYThhkFxqgTLpHlUtX4gjmnMqZKUl/ms9v40ZofQ9oXwSJ1JUtTWnufEnWSMUEXUWOHewkJmOIfu2tx/sP5ZG5KIWLweGfdeI9dIXiqvVIBd3Kq2q19DOhbqfhGBAAX1P5yCSuBNlYkvNf/zIrHj+7xsOmKzajU+rJrGnruSeOrQUTJeiw=='
+      AGENTNAME: 'Bhavana_prod'
       INCLUDECLOUDDEVICE: 'FALSE'
       INCLUDECLOUDBROWSER: 'FALSE'
       DEVICENAME: ''
-      PROJECTKEY: 'RTY'
+      PROJECTKEY: 'AUR45'
       BROWSER: 'chrome'
       REGION: 'UTC+05:30'
-      TESTRUNID: 'Test-Run-13056694'
+      TESTRUNID: 'Test-Run-13381660'
       ISCLOUDAGENT: 'FALSE'
       BROWSERVERSION: ''
       OS: 'Windows 8.1'
