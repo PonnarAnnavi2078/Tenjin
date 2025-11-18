@@ -11,7 +11,7 @@ jobs:
       AGENTNAME: "Win_Prod"
       INCLUDECLOUDDEVICE: "TRUE"
       INCLUDECLOUDBROWSER: "FALSE"
-      DEVICENAME: ""
+      DEVICENAME: "Samsung Galaxy Note 9"
       PROJECTKEY: "DD0"
       BROWSER: "chrome"
       REGION: "UTC+05:30"
